@@ -210,6 +210,7 @@ private:
    * @param cloud   input cloud
    * @return downsampled cloud
    */
+
   pcl::PointCloud<PointT>::ConstPtr downsample(const pcl::PointCloud<PointT>::ConstPtr& cloud) const {
     if(!downsample_filter) {
       return cloud;

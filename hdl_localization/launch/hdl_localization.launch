@@ -3,7 +3,8 @@
   <!-- arguments -->
   <!--- Sim Time -->
   <param name="/use_sim_time" value="true" />
-
+  <arg name="points_topic" default="/os1_points" />
+  <!--arg name="points_topic" default="/velodyne_points" /-->
   <arg name="nodelet_manager" default="velodyne_nodelet_manager" />
 
   <!-- in case you use velodyne_driver, comment out the following line -->
@@ -11,16 +12,17 @@
 
     <!-- globalmap_server_nodelet -->
     <node pkg="nodelet" type="nodelet" name="globalmap_server_nodelet" args="load hdl_localization/GlobalmapServerNodelet $(arg nodelet_manager)">
-      <param name="globalmap_pcd" value="$(find hdl_localization)/data/map.pcd" />
-      <param name="downsample_resolution" value="0.1" />
+      <param name="globalmap_pcd" value="$(find hdl_localization)/data/map_ouster.pcd" />
+      <param name="downsample_resolution" value="0.5" />
     </node>
 
     <!-- hdl_localization_nodelet -->
     <node pkg="nodelet" type="nodelet" name="hdl_localization_nodelet" args="load hdl_localization/HdlLocalizationNodelet $(arg nodelet_manager)">
         <!-- imu settings -->
         <!-- during "cool_time", imu inputs are ignored -->
-        <param name="use_imu" value="true" />
-        <param name="invert_imu" value="true" />
+        <remap from="/velodyne_points" to="$(arg points_topic)" />
+        <param name="use_imu" value="false" />
+        <param name="invert_imu" value="false" />
         <param name="cool_time_duration" value="2.0" />
         <!-- ndt settings -->
         <!-- if NDT is slow for your PC, try DIRECT1 serach method, which is a bit unstable but extremely fast -->
@@ -38,4 +40,6 @@
         <param name="init_ori_y" value="0.0" />
         <param name="init_ori_z" value="0.0" />
     </node>
+
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find hdl_localization)/rviz/hdl_localization.rviz" />
 </launch>
